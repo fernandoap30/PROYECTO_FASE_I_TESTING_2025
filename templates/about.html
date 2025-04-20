@@ -3,11 +3,27 @@
 {% block title %}Acerca de{% endblock %}
 
 {% block content %}
-    <h1>Acerca de TaskFlow</h1>
-    <p>TaskFlow es una aplicación de gestión de tareas con soporte para usuarios y edición completa.</p>
-    <ul>
-        <li>CRUD completo de tareas</li>
-        <li>Búsqueda de tareas</li>
-        <li>Autenticación de usuarios</li>
-    </ul>
+<h1>Gestión de Tareas</h1>
+
+<form method="GET" action="{{ url_for('manage_tasks') }}" class="mb-4">
+    <input type="text" name="search" placeholder="Buscar tareas..." value="{{ search_query }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<div class="task-list">
+    {% if tasks %}
+        {% for task in tasks %}
+            <div class="task-card">
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+                <p><em>Creado: {{ task.created_at }}</em></p>
+                <a href="{{ url_for('edit_task', id=task.id) }}">Editar</a>
+                <a href="{{ url_for('delete_task', id=task.id) }}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No se encontraron tareas.</p>
+    {% endif %}
+</div>
 {% endblock %}

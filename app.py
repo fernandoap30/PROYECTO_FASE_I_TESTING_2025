@@ -101,7 +101,7 @@ def edit_task(id):
         task.priority = request.form['priority']
         db.session.commit()
         flash('Tarea actualizada exitosamente', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('manage_tasks'))
 
     return render_template('edit.html', task=task)
 
@@ -111,11 +111,24 @@ def delete_task(id):
     db.session.delete(task)
     db.session.commit()
     flash('Tarea eliminada exitosamente', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('manage_tasks'))
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/manage')
+def manage_tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    search_query = request.args.get('search', '').strip()
+    tasks = Task.query.filter_by(user_id=session['user_id'])
+
+    if search_query:
+        tasks = tasks.filter(
+            (Task.title.contains(search_query)) |
+            (Task.description.contains(search_query))
+        )
+
+    tasks = tasks.all()
+    return render_template('about.html', tasks=tasks, search_query=search_query)
 
 if __name__ == '__main__':
     with app.app_context():

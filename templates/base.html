@@ -10,7 +10,7 @@
     <nav>
         {% if session.get('user_id') %}
             <a href="{{ url_for('index') }}">Inicio</a>
-            <a href="{{ url_for('about') }}">Acerca de</a>
+            <a href="{{ url_for('manage_tasks') }}">Gestionar tareas</a>
             <a href="{{ url_for('logout') }}">Cerrar sesión</a>
         {% else %}
             <a href="{{ url_for('login') }}">Iniciar sesión</a>
