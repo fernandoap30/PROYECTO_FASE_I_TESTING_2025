@@ -1,152 +1,35 @@
-
-<!--
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow - Gestión de Tareas</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .task-card {
-            margin-bottom: 20px;
-        }
-        .task-card .card-body {
-            background-color: #e9ecef;
-        }
-        nav {
-            background-color: #333;
-            padding: 1em;
-        }
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-
-<nav>
-    <a href="{{ url_for('index') }}">Inicio</a>
-    <a href="{{ url_for('about') }}">Acerca de</a>
-</nav>
-
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Gestión de Tareas</h1>
-
-    </!-- Mensajes flash --/>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alert alert-dismissible fade show {{ messages[0][0] }}" role="alert">
-                {{ messages[0][1] }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <form action="/add" method="POST" class="mb-4">
-        <div class="form-group">
-            <label for="title">Título de la Tarea</label>
-            <input type="text" name="title" class="form-control" id="title" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea name="description" class="form-control" id="description" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="priority">Prioridad</label>
-            <select name="priority" class="form-control" id="priority">
-                <option value="Alta">Alta</option>
-                <option value="Media">Media</option>
-                <option value="Baja">Baja</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Agregar Tarea</button>
-    </form>
-
-    </!-- Lista de tareas --/>
-    <div class="row">
-        {% for task in tasks %}
-            <div class="col-md-4">
-                <div class="card task-card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ task.title }}</h5>
-                        <p class="card-text">{{ task.description }}</p>
-                        <p><strong>Prioridad:</strong> {{ task.priority }}</p>
-                        <p><small>Creada el {{ task.created_at }}</small></p>
-                        <a href="/delete/{{ task.id }}" class="btn btn-danger">Eliminar</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-</body>
-</html>
--->
-
 {% extends 'base.html' %}
 
-{% block title %}TaskFlow - Inicio{% endblock %}
+{% block title %}Inicio - TaskFlow{% endblock %}
 
 {% block content %}
-    <h1 class="text-center mb-4">Gestión de Tareas</h1>
+    <h1>Gestión de Tareas</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alert alert-dismissible fade show {{ messages[0][0] }}" role="alert">
-                {{ messages[0][1] }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <form action="/add" method="POST" class="mb-4">
-        <div class="form-group">
-            <label for="title">Título de la Tarea</label>
-            <input type="text" name="title" class="form-control" id="title" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea name="description" class="form-control" id="description" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="priority">Prioridad</label>
-            <select name="priority" class="form-control" id="priority">
-                <option value="Alta">Alta</option>
-                <option value="Media">Media</option>
-                <option value="Baja">Baja</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+    <form method="GET" action="{{ url_for('index') }}" class="mb-4">
+        <input type="text" name="search" placeholder="Buscar tareas..." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Buscar</button>
     </form>
 
-    <div class="row">
+    <form action="{{ url_for('add_task') }}" method="POST">
+        <input type="text" name="title" placeholder="Título" required>
+        <textarea name="description" placeholder="Descripción"></textarea>
+        <select name="priority">
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+        </select>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <div class="task-list">
         {% for task in tasks %}
-            <div class="col-md-4">
-                <div class="card task-card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ task.title }}</h5>
-                        <p class="card-text">{{ task.description }}</p>
-                        <p><strong>Prioridad:</strong> {{ task.priority }}</p>
-                        <p><small>Creada el {{ task.created_at }}</small></p>
-                        <a href="/delete/{{ task.id }}" class="btn btn-danger">Eliminar</a>
-                    </div>
-                </div>
+            <div class="task-card">
+                <h3>{{ task.title }}</h3>
+                <p>{{ task.description }}</p>
+                <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+                <p><em>Creado: {{ task.created_at }}</em></p>
+                <a href="{{ url_for('edit_task', id=task.id) }}">Editar</a>
+                <a href="{{ url_for('delete_task', id=task.id) }}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
             </div>
         {% endfor %}
     </div>

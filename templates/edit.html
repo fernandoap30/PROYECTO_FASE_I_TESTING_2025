@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Tarea{% endblock %}
+
+{% block content %}
+    <h1>Editar Tarea</h1>
+    <form action="{{ url_for('edit_task', id=task.id) }}" method="POST">
+        <input type="text" name="title" value="{{ task.title }}" required>
+        <textarea name="description">{{ task.description }}</textarea>
+        <select name="priority">
+            <option value="Alta" {% if task.priority == 'Alta' %}selected{% endif %}>Alta</option>
+            <option value="Media" {% if task.priority == 'Media' %}selected{% endif %}>Media</option>
+            <option value="Baja" {% if task.priority == 'Baja' %}selected{% endif %}>Baja</option>
+        </select>
+        <button type="submit">Actualizar</button>
+    </form>
+{% endblock %}
