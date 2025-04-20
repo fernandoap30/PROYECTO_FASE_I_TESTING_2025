@@ -1,3 +1,5 @@
+
+<!--
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,14 +18,28 @@
         .task-card .card-body {
             background-color: #e9ecef;
         }
+        nav {
+            background-color: #333;
+            padding: 1em;
+        }
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
+<nav>
+    <a href="{{ url_for('index') }}">Inicio</a>
+    <a href="{{ url_for('about') }}">Acerca de</a>
+</nav>
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Gestión de Tareas</h1>
 
-    <!-- Mensajes flash -->
+    </!-- Mensajes flash --/>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="alert alert-dismissible fade show {{ messages[0][0] }}" role="alert">
@@ -55,7 +71,7 @@
         <button type="submit" class="btn btn-primary">Agregar Tarea</button>
     </form>
 
-    <!-- Lista de tareas -->
+    </!-- Lista de tareas --/>
     <div class="row">
         {% for task in tasks %}
             <div class="col-md-4">
@@ -79,3 +95,59 @@
 
 </body>
 </html>
+-->
+
+{% extends 'base.html' %}
+
+{% block title %}TaskFlow - Inicio{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-4">Gestión de Tareas</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert alert-dismissible fade show {{ messages[0][0] }}" role="alert">
+                {{ messages[0][1] }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/add" method="POST" class="mb-4">
+        <div class="form-group">
+            <label for="title">Título de la Tarea</label>
+            <input type="text" name="title" class="form-control" id="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea name="description" class="form-control" id="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="priority">Prioridad</label>
+            <select name="priority" class="form-control" id="priority">
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+    </form>
+
+    <div class="row">
+        {% for task in tasks %}
+            <div class="col-md-4">
+                <div class="card task-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ task.title }}</h5>
+                        <p class="card-text">{{ task.description }}</p>
+                        <p><strong>Prioridad:</strong> {{ task.priority }}</p>
+                        <p><small>Creada el {{ task.created_at }}</small></p>
+                        <a href="/delete/{{ task.id }}" class="btn btn-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
