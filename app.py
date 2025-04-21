@@ -14,6 +14,18 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     tasks = db.relationship('Task', backref='user', lazy=True)
 
+    @property
+    def password(self):
+        raise AttributeError("Password is write-only.")
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
@@ -89,7 +101,7 @@ def add_task():
     db.session.add(new_task)
     db.session.commit()
     flash('Tarea agregada exitosamente', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('manage_tasks'))
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_task(id):
